@@ -1,0 +1,38 @@
+import piexif
+
+
+def extract_exif(heic_file_path):
+    try:
+        exif_data = piexif.load(heic_file_path)
+        return exif_data
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+if __name__ == "__main__":
+    heic_file_path = "IMG_2338.jpeg"  # Replace with the path to your HEIC file
+    exif_data = extract_exif(heic_file_path)
+
+    if exif_data:
+        for ifd_name in exif_data:
+            print(f"IFD: {ifd_name}")
+            print("gps_info")
+            gps_ifd = exif_data.get('GPS', {})
+            latitude = gps_ifd.get(piexif.GPSIFD.GPSLatitude)
+            longitude = gps_ifd.get(piexif.GPSIFD.GPSLongitude)
+            cord = latitude + longitude
+            print(cord)
+            degrees = cord[0][0] / cord[0][1]
+            minutes = cord[1][0] / cord[1][1] / 60.0
+            seconds = cord[2][0] / cord[2][1] / 3600.0
+            print(degrees)
+            try:  # avoid error for items that are bytes or missing
+                for tag, value in exif_data[ifd_name].items():
+                    tag_name = piexif.TAGS[ifd_name][tag]["name"]
+
+                    print(f"{tag_name}: {value}")
+            except:
+                "N/A"
+    else:
+        print("Failed to extract EXIF data.")
