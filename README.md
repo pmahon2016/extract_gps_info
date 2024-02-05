@@ -1,3 +1,5 @@
 # extract_gps_info
 
-## pip install Pillow
+To install PIL library
+
+### pip install Pillow
