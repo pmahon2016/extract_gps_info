@@ -1,0 +1,59 @@
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
+
+
+def get_decimal_from_dms(dms, ref):
+    """
+    Convert degrees, minutes, and seconds (DMS) to decimal format.
+    """
+    degrees = dms[0]
+    minutes = dms[1] / 60.0
+    seconds = dms[2] / 3600.0
+
+    if ref in ['S', 'W']:
+        degrees = -degrees
+        minutes = -minutes
+        seconds = -seconds
+
+    return degrees + minutes + seconds
+
+
+def get_gps_coordinates(image_filename):
+    """
+    Extract GPS coordinates from an image and convert them to decimal format.
+    """
+    # Open image and extract EXIF data
+    image = Image.open(image_filename)
+    exif_data = image._getexif()
+
+    # Ensure the image has GPS info
+    if not exif_data or 34853 not in exif_data:
+        return None, None
+
+    # Extract GPS Info
+    gps_info = {}
+    for key in exif_data[34853].keys():
+        decode = GPSTAGS.get(key, key)
+        gps_info[decode] = exif_data[34853][key]
+
+    # Get GPS Latitude and Longitude in DMS
+    gps_latitude = gps_info.get('GPSLatitude')
+    gps_latitude_ref = gps_info.get('GPSLatitudeRef')
+    gps_longitude = gps_info.get('GPSLongitude')
+    gps_longitude_ref = gps_info.get('GPSLongitudeRef')
+
+    if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
+        lat = get_decimal_from_dms(gps_latitude, gps_latitude_ref)
+        lon = get_decimal_from_dms(gps_longitude, gps_longitude_ref)
+        return lat, lon
+
+    return None, None
+
+
+# run the app on a file
+image_filename = 'marseille.jpeg'
+latitude, longitude = get_gps_coordinates(image_filename)
+if latitude is not None and longitude is not None:
+    print(f"Latitude: {latitude}, Longitude: {longitude}")
+else:
+    print("GPS information not found in image.")
