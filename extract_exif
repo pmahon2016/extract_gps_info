@@ -1,9 +1,9 @@
 import piexif
 
 
-def extract_exif(heic_file_path):
+def extract_exif(image_file):
     try:
-        exif_data = piexif.load(heic_file_path)
+        exif_data = piexif.load(image_file)
         return exif_data
     except Exception as e:
         print(f"Error: {e}")
@@ -11,8 +11,8 @@ def extract_exif(heic_file_path):
 
 
 if __name__ == "__main__":
-    heic_file_path = "IMG_2338.jpeg"  # Replace with the path to your HEIC file
-    exif_data = extract_exif(heic_file_path)
+    image_file = "Your_Image_File"  # Replace with the path to your image file
+    exif_data = extract_exif(image_file)
 
     if exif_data:
         for ifd_name in exif_data:
