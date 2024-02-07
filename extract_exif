@@ -11,22 +11,14 @@ def extract_exif(image_file):
 
 
 if __name__ == "__main__":
-    image_file = "Your_Image_File"  # Replace with the path to your image file
+    image_file = "YOURFILEHERE"  # Replace with the path to your image file
     exif_data = extract_exif(image_file)
+
 
     if exif_data:
         for ifd_name in exif_data:
             print(f"IFD: {ifd_name}")
-            print("gps_info")
-            gps_ifd = exif_data.get('GPS', {})
-            latitude = gps_ifd.get(piexif.GPSIFD.GPSLatitude)
-            longitude = gps_ifd.get(piexif.GPSIFD.GPSLongitude)
-            cord = latitude + longitude
-            print(cord)
-            degrees = cord[0][0] / cord[0][1]
-            minutes = cord[1][0] / cord[1][1] / 60.0
-            seconds = cord[2][0] / cord[2][1] / 3600.0
-            print(degrees)
+
             try:  # avoid error for items that are bytes or missing
                 for tag, value in exif_data[ifd_name].items():
                     tag_name = piexif.TAGS[ifd_name][tag]["name"]
